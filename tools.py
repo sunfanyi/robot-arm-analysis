@@ -12,6 +12,25 @@ from IPython.display import display
 # sin(theta)
 
 
+def get_trans_mat(a, alpha, d, theta):
+    """
+    Obtain the transformation matrix from DH Parameters
+    :param a: Link angle (in deg)
+    :param alpha: Link twist
+    :param d: Link offset (in deg)
+    :param theta: Joint angle
+    :return: transformation matrix and rotation matrix
+    """
+    if type(alpha) == int or type(alpha) == float:
+        alpha = alpha*pi/180
+    if type(theta) == int or type(theta) == float:
+        theta = theta*pi/180
+
+    R = rotation(alpha, 'x') * rotation(theta, 'z')
+    T = add_translation(R, Matrix([a, 0, d, 1]))
+    return R, T
+
+
 def rotation(theta, direction):
     if direction == 'x':
         R = Matrix([[1, 0, 0],
