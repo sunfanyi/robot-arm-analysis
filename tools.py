@@ -12,6 +12,17 @@ from IPython.display import display
 # sin(theta)
 
 
+def plot_link(ax, P1, P2):
+    ax.plot3D([P1[0], P2[0]], [P1[1], P2[1]], [P1[2], P2[2]], 'b-')
+    ax.plot3D([P1[0]], [P1[1]], [P1[2]], 'bx')
+
+
+def joint_print(joints, alias):
+    for i in range(len(joints)):
+        print('Joint %d position:' % (i+1))
+        matprint(joints[i], alias)
+
+
 def get_trans_mat(a, alpha, d, theta):
     """
     Obtain the transformation matrix from DH Parameters
@@ -27,7 +38,8 @@ def get_trans_mat(a, alpha, d, theta):
         theta = theta*pi/180
 
     R = rotation(alpha, 'x') * rotation(theta, 'z')
-    T = add_translation(R, Matrix([a, 0, d, 1]))
+    R.simplify()
+    T = add_translation(R, Matrix([a, -sin(alpha) * d, cos(alpha) * d, 1]))
     return R, T
 
 
