@@ -103,9 +103,11 @@ def add_translation(R, t=Matrix([0, 0, 0, 1])):
     return T
 
 
-def eqnprint(symbol, expression, ans=None, alias=None):
+def eqnprint(symbol, alias=None, expression=None, ans=None):
     if ans is None:
         display(Math(f'{symbol.subs(alias)}={expression.subs(alias)}'))
+    elif expression is None:
+        display(Math(f'{symbol.subs(alias)}={ans}'))
     else:
         display(Math(f'{symbol.subs(alias)}={expression.subs(alias)}={ans}'))
 
