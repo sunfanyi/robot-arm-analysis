@@ -7,7 +7,7 @@
 
 
 from sympy import *
-from IPython.display import display
+from IPython.display import display, Math
 # cos(theta)
 # sin(theta)
 
@@ -103,12 +103,22 @@ def add_translation(R, t=Matrix([0, 0, 0, 1])):
     return T
 
 
+def eqnprint(symbol, expression, ans=None, alias=None):
+    if ans is None:
+        display(Math(f'{symbol.subs(alias)}={expression.subs(alias)}'))
+    else:
+        display(Math(f'{symbol.subs(alias)}={expression.subs(alias)}={ans}'))
+
+
 def symprint(symbol, sup, sub, dot=False):
     if dot == 1:
         symbol = r'\dot{%s}' % symbol
     elif dot == 2:
         symbol = r'\ddot{%s}' % symbol
-    info = r"^{}{}_{}".format(sup, symbol, sub)
+    if sup == '':
+        info = r"{}_{}".format(symbol, sub)
+    else:
+        info = r"^{}{}_{}".format(sup, symbol, sub)
     display(symbols(info))
 
 
