@@ -61,13 +61,14 @@ def joint_print(joints, alias):
         matprint(joints[i], alias)
 
 
-def get_trans_mat(a, alpha, d, theta):
+def get_trans_mat(a, alpha, d, theta, return_P=False):
     """
     Obtain the transformation matrix from DH Parameters
     :param a: Link angle (in deg)
     :param alpha: Link twist
     :param d: Link offset (in deg)
     :param theta: Joint angle
+    :param return_P: return the 3x1 translation matrix
     :return: transformation matrix and rotation matrix
     """
     if type(alpha) == int or type(alpha) == float:
@@ -78,7 +79,10 @@ def get_trans_mat(a, alpha, d, theta):
     R = rotation(alpha, 'x') * rotation(theta, 'z')
     R.simplify()
     T = add_translation(R, Matrix([a, -sin(alpha) * d, cos(alpha) * d, 1]))
-    return R, T
+    if return_P:
+        return R, T, Matrix([a, -sin(alpha) * d, cos(alpha) * d])
+    else:
+        return R, T
 
 
 def rotation(theta, direction):
