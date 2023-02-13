@@ -55,10 +55,27 @@ def plot_links_moving(line1, line2, links):
     line2.set_3d_properties(joint_data[2])
 
 
-def joint_print(joints, alias):
-    for i in range(len(joints)):
-        print('Joint %d position:' % (i+1))
-        matprint(joints[i], alias)
+def update_target_vals(T0e_target, initial_vals):
+    """
+    get the target values from the position of end effector which can be used
+    for inverse kinematics
+    :param T0e_target: matrix of the position of end effector
+    :param initial_vals: a dict containing all the keys, eg.
+        initial_vals = {r11: None, r12: None, r13: None,
+                        r21: None, r22: None, r23: None,
+                        r31: None, r32: None, r33: None,
+                        X: None, Y: None, Z: None}
+        where the rii, X, Y, Z are sympy symbols
+    :return: a dict containing target rii, X, Y, Z values, which can be
+        substituted easily to equation by .subs(vals), eg.
+    """
+    keys = list(initial_vals.keys())  # take the keys
+    # update the values
+    vals = {keys[0]: T0e_target[0, 0], keys[1]: T0e_target[0, 1], keys[2]: T0e_target[0, 2],
+            keys[3]: T0e_target[1, 0], keys[4]: T0e_target[1, 1], keys[5]: T0e_target[1, 2],
+            keys[6]: T0e_target[2, 0], keys[7]: T0e_target[2, 1], keys[8]: T0e_target[2, 2],
+            keys[9]: T0e_target[0, 3], keys[10]: T0e_target[1, 3], keys[11]: T0e_target[2, 3]}
+    return vals
 
 
 def get_trans_mat(a, alpha, d, theta, return_P=False):
@@ -133,6 +150,12 @@ def matprint(matrix, alias=None):
         display(matrix.subs(alias))
     else:
         display(matrix)
+
+
+def joint_print(joints, alias):
+    for i in range(len(joints)):
+        print('Joint %d position:' % (i+1))
+        matprint(joints[i], alias)
 
 
 if __name__ == '__main__':
