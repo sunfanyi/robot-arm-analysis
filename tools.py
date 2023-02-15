@@ -189,6 +189,7 @@ def calc_parabolic_traj_via_points(t, theta_pre, theta_dot_pre, V, a_left,
     theta_vals[range2] = a0 + a1*t[range2] + a2*t[range2]**2
     theta_velo[range2] = a1 + 2*a2*t[range2]
     theta_acc[range2] = 2*a2
+    theta_ideal = a0 + a1*t + a2*t**2
 
     range3 = (t > tf-tb_right) & (t <= tf)
     a1 = V - a_right * (tf - tb_right)
@@ -198,7 +199,8 @@ def calc_parabolic_traj_via_points(t, theta_pre, theta_dot_pre, V, a_left,
     theta_vals[range3] = a0 + a1*t[range3] + a2*t[range3]**2
     theta_velo[range3] = a1 + 2*a2*t[range3]
     theta_acc[range3] = 2*a2
-    return theta_vals, theta_velo, theta_acc
+
+    return theta_vals, theta_velo, theta_acc, theta_ideal
 
 
 
