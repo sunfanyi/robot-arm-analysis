@@ -6,6 +6,7 @@
 # @Software: PyCharm
 
 
+import numpy as np
 from sympy import *
 from IPython.display import display, Math
 # cos(theta)
@@ -156,6 +157,75 @@ def joint_print(joints, alias):
     for i in range(len(joints)):
         print('Joint %d position:' % (i+1))
         matprint(joints[i], alias)
+
+
+def calc_blend_time(th, a, theta_0, theta_f):
+    tb = th - np.sqrt(a**2*th**2 - a*(theta_f-theta_0))/a
+    return tb
+
+
+def calc_parabolic_traj_via_points(t, theta_pre, theta_dot_pre, V, a_left,
+                                   a_right, tb_left, tb_right):
+    """
+    Linear and Parabolic Blended Trajectories with via points
+    """
+    tf = t[-1]
+    theta_vals = np.ndarray(np.shape(t))  # position
+    theta_velo = np.ndarray(np.shape(t))  # velocity
+    theta_acc = np.ndarray(np.shape(t))  # acceleration
+
+    range1 = (t >= 0) & (t <= tb_left)
+    a0 = theta_pre
+    a1 = theta_dot_pre
+    a2 = a_left/2
+    theta_vals[range1] = a0 + a1*t[range1] + a2*t[range1]**2
+    theta_velo[range1] = a1 + 2*a2*t[range1]
+    theta_acc[range1] = 2*a2
+
+    range2 = (t > tb_left) & (t <= tf-tb_right)
+    a0 = theta_pre + tb_left*(theta_dot_pre-V) + a_left/2*tb_left**2
+    a1 = V
+    a2 = 0
+    theta_vals[range2] = a0 + a1*t[range2] + a2*t[range2]**2
+    theta_velo[range2] = a1 + 2*a2*t[range2]
+    theta_acc[range2] = 2*a2
+
+    range3 = (t > tf-tb_right) & (t <= tf)
+    a1 = V - a_right * (tf - tb_right)
+    a2 = a_right/2
+    a0 = theta_pre + tb_left*(theta_dot_pre-V) + a_left/2*tb_left**2 + \
+                        (tf - tb_right) * (V - a1) - (tf - tb_right)**2 * a2
+    theta_vals[range3] = a0 + a1*t[range3] + a2*t[range3]**2
+    theta_velo[range3] = a1 + 2*a2*t[range3]
+    theta_acc[range3] = 2*a2
+    return theta_vals, theta_velo, theta_acc
+
+
+
+def calc_parabolic_traj(t, theta_0, theta_f, V, tb, a):
+    """
+    Linear and Parabolic Blended Trajectories
+    """
+    tf = t[-1]
+    theta_vals = np.ndarray(np.shape(t))  # position
+    theta_velo = np.ndarray(np.shape(t))  # velocity
+    theta_acc = np.ndarray(np.shape(t))  # acceleration
+
+    range1 = (t >= 0) & (t <= tb)
+    theta_vals[range1] = theta_0 + V/(2*tb)*t[range1]**2
+    theta_velo[range1] = V/tb*t[range1]
+    theta_acc[range1] = V/tb
+
+    range2 = (t > tb) & (t <= tf-tb)
+    theta_vals[range2] = (theta_f+theta_0-V*tf)/2 + V*t[range2]
+    theta_velo[range2] = V
+    theta_acc[range2] = 0
+
+    range3 = (t > tf-tb) & (t <= tf)
+    theta_vals[range3] = theta_f - a*tf**2/2 + a*tf*t[range3] - a/2*t[range3]**2
+    theta_velo[range3] = a*tf - a*t[range3]
+    theta_acc[range3] = -a
+    return theta_vals, theta_velo, theta_acc
 
 
 if __name__ == '__main__':
