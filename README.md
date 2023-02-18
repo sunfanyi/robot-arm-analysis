@@ -29,7 +29,7 @@ These constrain the manipulator movement so that links would not overlap physica
 
 DH Parameters:
 
-![](Figures/dh parameters.png)
+![](Figures/dh_parameters.png)
 
 This gives the transformation matrices:
 
